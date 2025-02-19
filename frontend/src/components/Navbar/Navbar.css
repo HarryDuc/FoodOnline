@@ -12,12 +12,12 @@
     display: flex;
     list-style: none;
     gap: 20px;
-
 }
 .navbar-right {
     display: flex;
     align-items: center;
-    gap: 4;
+    gap: 40px;
+    justify-content: space-between;
 }
 .navbar button {
     background: transparent;
