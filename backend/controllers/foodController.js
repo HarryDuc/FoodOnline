@@ -2,6 +2,9 @@ import foodModel from "../models/foodModel.js";
 import fs from "fs";
 
 const addFood = async (req, res)=> {
+    if (!req.file) {
+        return res.json({ success: false, message: "Không có file nào được tải lên!" });
+    }
     let image_filename = `${req.file.filename}`;
     const food = new foodModel({
         name: req.body.name,
