@@ -13,7 +13,7 @@ export const connectDB = async () => {
     //     console.error("Error connecting to MongoDB:", error.message);
     //     process.exit(1);
     // }
-    await mongoose.connect('mongodb+srv://minhduccode:DXZFfxFQmw5hfCXi@cluster0.n0osb.mongodb.net/food').then(() => {
+    await mongoose.connect(process.env.MONGODB_URI).then(() => {
         console.log('Connected to MongoDB!')
     })
 }

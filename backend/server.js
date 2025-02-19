@@ -2,9 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import { connectDB } from './config/db.js';
 import foodRoutes from './routes/foodRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import 'dotenv/config'
+
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 
 app.use(express.json());
 app.use(cors());
@@ -13,6 +16,7 @@ app.use(cors());
 connectDB();
 
 app.use("/api/food", foodRoutes)
+app.use("/api/user", userRoutes)
 app.use("/images",express.static('uploads'))
 
 app.get("/", (req, res)=> {
