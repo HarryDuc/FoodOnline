@@ -6,14 +6,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const placeOrder = async (req, res) => {
     const frontend_url = "http://localhost:5173"
-    console.log(req.body.userId)
     try {
         const newOrder = new orderModel({
-            user: req.user.userId,
+            userId: req.body.userId,
             items: req.body.items,
             amount: req.body.amount,
             address: req.body.address
         })
+        console.log("Address:", req.body.address);
+
         await newOrder.save();
         await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} })
 
@@ -49,8 +50,55 @@ const placeOrder = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.json({success: false, message: "Lỗi thanh toán"})
+        res.json({ success: false, message: "Lỗi thanh toán" })
     }
 }
 
-export { placeOrder };
+const verifyOrder = async (req, res) => {
+    const { orderId, success } = req.body;
+    try {
+        if (success == "true") {
+            await orderModel.findByIdAndUpdate(orderId, { payment: true })
+            res.json({ success: true, message: "Paid" })
+        } else {
+            await orderModel.findByIdAndDelete(orderId)
+            res.json({ success: false, message: "Not Paid" })
+        }
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Lỗi" })
+    }
+}
+
+const userOrders = async (req, res) => {
+    try {
+        const orders = await orderModel.find({ userId: req.body.userId });
+        res.json({ success: true, data: orders });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Lỗi" });
+    }
+}
+
+const listOrders = async (req, res) => {
+    try {
+        const orders = await orderModel.find({});
+        res.json({ success: true, data: orders });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Lỗi" });
+    }
+}
+
+
+const updateStatus = async (req, res) => {
+    try {
+        await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status });
+        res.json({ success: true, message: "Cập nhật trạng thái thành công" });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: "Lỗi cập nhật trạng thái" });
+    }
+}
+
+export { placeOrder, verifyOrder, userOrders, listOrders, updateStatus };
